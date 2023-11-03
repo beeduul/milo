@@ -8,7 +8,7 @@ function getPicture(row, idx) {
 }
 
 function getImageUrl(row, idx) {
-  return getPicture(row, idx)?.querySelector('img').src;
+  return getPicture(row, idx)?.querySelector('source').srcset;
 }
 
 function getColor(row) {
@@ -90,9 +90,9 @@ export default async function init(el) {
   
   marqueeEle.config = {
     desktop: {
-      marqueeTitleImgSrc: data.text.desktop.children[3].src,
-      talentSrc: data.foreground.desktop.children[3].src,
-      defaultBgSrc: data.background.desktop.children[3].src,
+      marqueeTitleImgSrc: data.text.desktop.children[0].srcset,
+      talentSrc: data.foreground.desktop.children[0].srcset,
+      defaultBgSrc: data.background.desktop.children[0].srcset,
       tryitSrc: `${localAssetsRoot}/tryit.svg`,
       tryitText: 'Try It',
       cursorSrc: `${localAssetsRoot}/desktop/dt-mouse-arrow.svg`,
@@ -149,9 +149,9 @@ export default async function init(el) {
       ]
     },
     tablet: {
-      marqueeTitleImgSrc: data.text.tablet.children[3].src,
-      talentSrc: data.foreground.tablet.children[3].src,
-      defaultBgSrc: data.background.tablet.children[3].src,
+      marqueeTitleImgSrc: data.text.tablet.children[0].srcset,
+      talentSrc: data.foreground.tablet.children[0].srcset,
+      defaultBgSrc: data.background.tablet.children[0].srcset,
       tryitSrc: `${localAssetsRoot}/tryit.svg`,
       tryitText: 'Try It',
       groups: [
@@ -189,9 +189,9 @@ export default async function init(el) {
       ]
     },
     mobile: {
-      marqueeTitleImgSrc: data.text.mobile.children[3].src,
-      talentSrc: data.foreground.mobile.children[3].src,
-      defaultBgSrc: data.background.mobile.children[3].src,
+      marqueeTitleImgSrc: data.text.mobile.children[0].srcset,
+      talentSrc: data.foreground.mobile.children[0].srcset,
+      defaultBgSrc: data.background.mobile.children[0].srcset,
       tryitSrc: `${localAssetsRoot}/tryit.svg`,
       tryitText: 'Try It',
       groups: [
@@ -240,8 +240,6 @@ export default async function init(el) {
 
 
   console.log(marqueeEle.config);
-  setTimeout(() => {
-    el.append(marqueeEle);
-  }, 100)
+  el.append(marqueeEle);
 
 }
