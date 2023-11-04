@@ -137,7 +137,7 @@ const eagerLoad = (img) => {
   const lcpBlock = document.body.querySelector('div[class]');
 
   if (lcpBlock?.classList[0] === 'imarquee-changebg') {
-    const lcpImgs = lcpBlock.querySelectorAll(':scope > div > div:first-child img');
+    const lcpImgs = Array.from(lcpBlock.querySelectorAll(':scope > div > div:first-child img')).slice(0, 3);
     lcpImgs.forEach((img) => { eagerLoad(img); });
   }
 
