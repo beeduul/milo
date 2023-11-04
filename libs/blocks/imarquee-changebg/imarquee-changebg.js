@@ -189,9 +189,9 @@ export default async function init(el) {
       ]
     },
     mobile: {
-      marqueeTitleImgSrc: data.text.mobile.children[0].srcset,
-      talentSrc: data.foreground.mobile.children[0].srcset,
-      defaultBgSrc: data.background.mobile.children[0].srcset,
+      marqueeTitleImgSrc: data.text.mobile.children[1].srcset,
+      talentSrc: data.foreground.mobile.children[1].srcset,
+      defaultBgSrc: data.background.mobile.children[1].srcset,
       tryitSrc: `${localAssetsRoot}/tryit.svg`,
       tryitText: 'Try It',
       groups: [
