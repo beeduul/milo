@@ -44,9 +44,6 @@ export default async function init(el) {
         tablet: getPicture(row, 1),
         desktop: getPicture(row, 2),
       };
-      const mobileImg = acc.text.mobile.querySelector('img');
-      console.log(mobileImg);
-      // mobileImg.width = '274px'
     } else if (section.startsWith('change photo')) {
       const idx = Number.parseInt(section.slice(-1), 10);
       acc[section] = {
@@ -72,16 +69,19 @@ export default async function init(el) {
     return acc;
   }, {});
 
-  const gradient = document.createElement('div');
-  gradient.className = 'imarquee-gradient';
+  const gradient = () => {
+    const gradient = document.createElement('div');
+    gradient.className = 'imarquee-gradient';
+    return gradient;
+  }
 
-  const mobileComposite = createTag('div', { class: 'imarquee-composite' }, [data.background.mobile, gradient, data.foreground.mobile]);
+  const mobileComposite = createTag('div', { class: 'imarquee-composite' }, [data.background.mobile, gradient(), data.foreground.mobile]);
   const mobileContainer = createTag('div', { class: 'imarquee-mobile' }, [data.text.mobile, mobileComposite]);
 
-  const tabletComposite = createTag('div', { class: 'imarquee-composite' }, [data.background.tablet, data.foreground.tablet, data.text.tablet]);
+  const tabletComposite = createTag('div', { class: 'imarquee-composite' }, [data.background.tablet, gradient(), data.foreground.tablet, data.text.tablet]);
   const tabletContainer = createTag('div', { class: 'imarquee-tablet' }, tabletComposite);
 
-  const desktopComposite = createTag('div', { class: 'imarquee-composite' }, [data.background.desktop, data.foreground.desktop, data.text.desktop]);
+  const desktopComposite = createTag('div', { class: 'imarquee-composite' }, [data.background.desktop, gradient(), data.foreground.desktop, data.text.desktop]);
   const desktopContainer = createTag('div', { class: 'imarquee-desktop' }, desktopComposite);
 
   el.append(mobileContainer, tabletContainer, desktopContainer);
