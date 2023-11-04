@@ -234,23 +234,12 @@ export default async function init(el) {
 
   import(`${base}/deps/imarquee-changebg/ft-everyonechangebgmarquee-8e121e97.js`);
 
-  const preloadPromise = new Promise((resolve, reject) => {
-    marqueeEle.addEventListener('preload', (ev) => {
-      marqueeEle.updateComplete.then(() => {
-        resolve();
-      })
+  marqueeEle.addEventListener('preload', (ev) => {
+    marqueeEle.updateComplete.then(() => {
+      marqueeEle.classList.add('loaded');
     })
   })
 
-  const timeoutPromise = new Promise((resolve) => {
-    setTimeout(() => {
-      el.append(marqueeEle);
-      resolve();
-    }, 3000);
-  });
-
-  Promise.all([preloadPromise, timeoutPromise]).then(() => {
-    marqueeEle.classList.add('loaded');
-  })
+  el.append(marqueeEle);
 
 }
