@@ -11,7 +11,7 @@ function getImageUrl(row, col) {
   return getPicture(row, col)?.querySelector('source').srcset;
 }
 
-function getColor(row) {
+function getText(row) {
   return row.children[0].innerText.trim();
 }
 
@@ -77,9 +77,9 @@ export default async function init(el) {
       if (gIdx === 0) { // remove background
         SKUS.forEach(sku => config[sku].groups[gIdx] = { name, iconUrl } )
       } else if (gIdx == 2) { // change color
-        const col1 = getColor(rows[gOffset+1]);
-        const col2 = getColor(rows[gOffset+2]);
-        const col3 = getColor(rows[gOffset+3]);
+        const col1 = getText(rows[gOffset+1]);
+        const col2 = getText(rows[gOffset+2]);
+        const col3 = getText(rows[gOffset+3]);
         SKUS.forEach((sku) => {
           const options = sku === 'desktop' ? [ { src: col1 }, { src: col2 }, { src: col3 }] : [ { src: col1 }]
           config[sku].groups[gIdx] = { name, iconUrl, options }
@@ -101,7 +101,8 @@ export default async function init(el) {
       }
     })
 
-    const marqueeEle = document.createElement('ft-changebackgroundmarquee');
+    const tryItText = getText(rows[22]);
+
     SKUS.forEach(sku => {
       const srcSetIdx = sku === 'mobile' ? 1 : 0;
       const addl = {
@@ -109,14 +110,15 @@ export default async function init(el) {
         talentSrc: data.foreground[sku].children[srcSetIdx].srcset,
         defaultBgSrc: data.background[sku].children[srcSetIdx].srcset,
         tryitSrc: `${localAssetsRoot}/tryit.svg`,
-        tryitText: 'Try It', // TODO
+        tryitText: tryItText
       }
       if (sku === 'desktop') {
         addl.cursorSrc = `${localAssetsRoot}/desktop/dt-Mouse-arrow.svg`;
       }
       config[sku] = { ...config[sku], ...addl };
     })
-    
+
+    const marqueeEle = document.createElement('ft-changebackgroundmarquee');
     marqueeEle.config = config;
 
     import(`${base}/deps/imarquee-changebg/ft-everyonechangebgmarquee-8e121e97.js`);
