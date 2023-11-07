@@ -4,70 +4,49 @@ const base = `${window.location.origin}/libs`;
 const localAssetsRoot = `${base}/assets/imarquee-changebg`;
 
 function getPicture(row, idx) {
-  return row.nextElementSibling.children[idx].querySelector('picture');
+  return row.children[idx].querySelector('picture');
 }
 
-function getImageUrl(row, idx) {
-  return getPicture(row, idx)?.querySelector('source').srcset;
+function getImageUrl(row, col) {
+  return getPicture(row, col)?.querySelector('source').srcset;
 }
 
 function getColor(row) {
-  return row.nextElementSibling.children[0].innerText.trim();
+  return row.children[0].innerText.trim();
 }
 
 export default async function init(el) {
 
+  if (document.querySelector('meta[name="debug"]').content === 'on' || 
+  (new URLSearchParams(document.location.search)).get('debug') == 'on'
+  ) {
+    const { default: debug } = await import(`./author-feedback.js`);
+    debug(el);
+  }
+
   const config = {
-    desktop: {},
-    tablet: {},
-    mobile: {}
+    desktop: { groups: [] },
+    tablet: { groups: [] },
+    mobile: { groups: [] }
   }
 
   const rows = el.querySelectorAll(':scope > div');
-  const data = [...rows].reduce((acc, row) => {
-    const section = row.innerText.trim().toLowerCase();
-    if (section === 'background') {
-      acc.background = {
-        mobile: getPicture(row, 0),
-        tablet: getPicture(row, 1),
-        desktop: getPicture(row, 2),
-      };
-    } else if (section === 'foreground') {
-      acc.foreground = {
-        mobile: getPicture(row, 0),
-        tablet: getPicture(row, 1),
-        desktop: getPicture(row, 2),
-      };
-    } else if (section === 'text') {
-      acc.text = {
-        mobile: getPicture(row, 0),
-        tablet: getPicture(row, 1),
-        desktop: getPicture(row, 2),
-      };
-    } else if (section.startsWith('change photo')) {
-      const idx = Number.parseInt(section.slice(-1), 10);
-      acc[section] = {
-        mobile: getImageUrl(row, 0),
-        tablet: getImageUrl(row, 1),
-        desktop: getImageUrl(row, 2),
-      }
-    } else if (section.startsWith('change color')) {
-      const idx = Number.parseInt(section.slice(-1), 10);
-      acc[section] = {
-        color: getColor(row),
-      }
-    } else if (section.startsWith('change pattern')) {
-      const idx = Number.parseInt(section.slice(-1), 10);
-      acc[section] = {
-        mobile: getImageUrl(row, 0),
-        tablet: getImageUrl(row, 1),
-        desktop: getImageUrl(row, 2),
-      }
-    }
+  rows.forEach(r => r.className = 'hide-block');
 
-    row.className = 'hide-block';
-    return acc;
-  }, {});
+  const SKUS = ['mobile', 'tablet', 'desktop'];
+
+  const LCP_OFFSETS = [1, 3, 5]; // ['background', 'foreground', 'text'];
+  const data = {};
+  ['background', 'foreground', 'text'].forEach((lcp, lcpIdx) => {
+    data[lcp] = SKUS.reduce((acc, sku, skuIdx) => {
+      const row = rows[LCP_OFFSETS[lcpIdx]];
+      acc[sku] = getPicture(
+        row,
+        skuIdx
+      )
+      return acc;
+    }, {})
+  })
 
   const gradient = () => {
     const gradient = document.createElement('div');
@@ -86,160 +65,72 @@ export default async function init(el) {
 
   el.append(mobileContainer, tabletContainer, desktopContainer);
 
-  const marqueeEle = document.createElement('ft-changebackgroundmarquee');
-  
-  marqueeEle.config = {
-    desktop: {
-      marqueeTitleImgSrc: data.text.desktop.children[0].srcset,
-      talentSrc: data.foreground.desktop.children[0].srcset,
-      defaultBgSrc: data.background.desktop.children[0].srcset,
-      tryitSrc: `${localAssetsRoot}/tryit.svg`,
-      tryitText: 'Try It',
-      cursorSrc: `${localAssetsRoot}/desktop/dt-mouse-arrow.svg`,
-      groups: [
-        {
-          name: 'Remove Background',
-          iconUrl: `${localAssetsRoot}/remove-background-icon.svg`
-        },
-        {
-          name: 'Change Photo',
-          iconUrl: `${localAssetsRoot}/change-photo-icon.svg`,
-          options: [
-            {
-              src: data['change photo 1'].desktop,
-              swatchSrc: ''
-            },
-            {
-              src: data['change photo 2'].desktop,
-              swatchSrc: ''
-            },
-            {
-              src: data['change photo 3'].desktop,
-              swatchSrc: ''
-            },
-          ]
-        },
-        {
-          name: 'Change Color',
-          iconUrl: `${localAssetsRoot}/change-color-icon.svg`,
-          options: [
-            { src: data['change color 1'].color, },
-            { src: data['change color 2'].color },
-            { src: data['change color 3'].color }
-          ]
-        },
-        {
-          name: 'Change Pattern',
-          iconUrl: `${localAssetsRoot}/change-pattern-icon.svg`,
-          options: [
-            {
-              src: data['change pattern 1'].desktop,
-              swatchSrc: ''
-            },
-            {
-              src: data['change pattern 2'].desktop,
-              swatchSrc: ''
-            },
-            {
-              src: data['change pattern 3'].desktop,
-              swatchSrc: ''
-            },
-          ]
-        }
-      ]
-    },
-    tablet: {
-      marqueeTitleImgSrc: data.text.tablet.children[0].srcset,
-      talentSrc: data.foreground.tablet.children[0].srcset,
-      defaultBgSrc: data.background.tablet.children[0].srcset,
-      tryitSrc: `${localAssetsRoot}/tryit.svg`,
-      tryitText: 'Try It',
-      groups: [
-        {
-          name: 'Remove Background',
-          iconUrl: `${localAssetsRoot}/remove-background-icon.svg`
-        },
-        {
-          name: 'Change Photo',
-          iconUrl: `${localAssetsRoot}/change-photo-icon.svg`,
-          options: [
-            {
-              src: data['change photo 1'].tablet,
-              swatchSrc: ''
-            },
-          ]
-        },
-        {
-          name: 'Change Color',
-          iconUrl: `${localAssetsRoot}/change-color-icon.svg`,
-          options: [
-            { src: data['change color 1'].color, },
-          ]
-        },
-        {
-          name: 'Change Pattern',
-          iconUrl: `${localAssetsRoot}/change-pattern-icon.svg`,
-          options: [
-            {
-              src: data['change pattern 1'].tablet,
-              swatchSrc: ''
-            },
-          ]
-        }
-      ]
-    },
-    mobile: {
-      marqueeTitleImgSrc: data.text.mobile.children[1].srcset,
-      talentSrc: data.foreground.mobile.children[1].srcset,
-      defaultBgSrc: data.background.mobile.children[1].srcset,
-      tryitSrc: `${localAssetsRoot}/tryit.svg`,
-      tryitText: 'Try It',
-      groups: [
-        {
-          name: 'Remove Background',
-          iconUrl: `${localAssetsRoot}/remove-background-icon.svg`
-        },
-        {
-          name: 'Change Photo',
-          iconUrl: `${localAssetsRoot}/change-photo-icon.svg`,
-          options: [
-            {
-              src: data['change photo 1'].mobile,
-              swatchSrc: ''
-            },
-          ]
-        },
-        {
-          name: 'Change Color',
-          iconUrl: `${localAssetsRoot}/change-color-icon.svg`,
-          options: [
-            { src: data['change color 1'].color, },
-          ]
-        },
-        {
-          name: 'Change Pattern',
-          iconUrl: `${localAssetsRoot}/change-pattern-icon.svg`,
-          options: [
-            {
-              src: data['change pattern 1'].mobile,
-              swatchSrc: ''
-            },
-          ]
-        }
-      ]
-    }
-  }
+  setTimeout(() => {
+    const GROUP_REGEX = /group\s+(\d)\s*:\s*(.*)/i;
+    const GROUP_ICON_URLS = ['remove-background-icon', 'change-photo-icon', 'change-color-icon', 'change-pattern-icon'].map(v => `${localAssetsRoot}/${v}.svg`)
+    const GRP_OFFSET = [6, 7, 12, 16];
 
-  console.log('CONFIG', marqueeEle.config);
-
-  import(`${base}/deps/imarquee-changebg/ft-everyonechangebgmarquee-8e121e97.js`);
-
-  marqueeEle.addEventListener('preload', (ev) => {
-    marqueeEle.updateComplete.then(() => {
-      marqueeEle.classList.add('loaded');
+    GRP_OFFSET.forEach((gOffset, gIdx) => {
+      const row = rows[gOffset]
+      const name = row.innerText.trim().match(GROUP_REGEX)[2];
+      let iconUrl = GROUP_ICON_URLS[gIdx];
+      if (gIdx === 0) { // remove background
+        SKUS.forEach(sku => config[sku].groups[gIdx] = { name, iconUrl } )
+      } else if (gIdx == 2) { // change color
+        const col1 = getColor(rows[gOffset+1]);
+        const col2 = getColor(rows[gOffset+2]);
+        const col3 = getColor(rows[gOffset+3]);
+        SKUS.forEach((sku) => {
+          const options = sku === 'desktop' ? [ { src: col1 }, { src: col2 }, { src: col3 }] : [ { src: col1 }]
+          config[sku].groups[gIdx] = { name, iconUrl, options }
+        })
+      } else { // change photo/pattern
+        const get3Img = (row) => [0, 1, 2].map(col => getImageUrl(row, col));
+        const swatchSrc = get3Img(rows[gOffset+1]);
+        const pics1 = get3Img(rows[gOffset+2]);
+        const pics2 = get3Img(rows[gOffset+3]);
+        const pics3 = get3Img(rows[gOffset+4]);
+        SKUS.forEach((sku, idx) => {
+          const options = sku === 'desktop' ? [
+            { src: pics1[idx], swatchSrc: swatchSrc[idx]},
+            { src: pics2[idx], swatchSrc: swatchSrc[idx]},
+            { src: pics3[idx], swatchSrc: swatchSrc[idx]},
+          ] : [ { src: pics1[idx], swatchSrc: swatchSrc[idx]} ]
+          config[sku].groups[gIdx] = { name, iconUrl, options }
+        })
+      }
     })
-  })
 
-  el.append(marqueeEle);
+    const marqueeEle = document.createElement('ft-changebackgroundmarquee');
+    SKUS.forEach(sku => {
+      const srcSetIdx = sku === 'mobile' ? 1 : 0;
+      const addl = {
+        marqueeTitleImgSrc: data.text[sku].children[srcSetIdx].srcset,
+        talentSrc: data.foreground[sku].children[srcSetIdx].srcset,
+        defaultBgSrc: data.background[sku].children[srcSetIdx].srcset,
+        tryitSrc: `${localAssetsRoot}/tryit.svg`,
+        tryitText: 'Try It', // TODO
+      }
+      if (sku === 'desktop') {
+        addl.cursorSrc = `${localAssetsRoot}/desktop/dt-mouse-arrow.svg`;
+      }
+      config[sku] = { ...config[sku], ...addl };
+    })
+    
+    console.log(config);
+
+    marqueeEle.config = config;
+
+    import(`${base}/deps/imarquee-changebg/ft-everyonechangebgmarquee-8e121e97.js`);
+
+    marqueeEle.addEventListener('preload', (ev) => {
+      marqueeEle.updateComplete.then(() => {
+        marqueeEle.classList.add('loaded');
+      })
+    })
+
+    el.append(marqueeEle);
+
+  })
 
 }
