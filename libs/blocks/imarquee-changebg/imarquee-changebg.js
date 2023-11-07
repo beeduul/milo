@@ -117,8 +117,6 @@ export default async function init(el) {
       config[sku] = { ...config[sku], ...addl };
     })
     
-    console.log(config);
-
     marqueeEle.config = config;
 
     import(`${base}/deps/imarquee-changebg/ft-everyonechangebgmarquee-8e121e97.js`);
