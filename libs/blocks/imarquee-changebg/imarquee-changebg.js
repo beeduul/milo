@@ -112,7 +112,7 @@ export default async function init(el) {
         tryitText: 'Try It', // TODO
       }
       if (sku === 'desktop') {
-        addl.cursorSrc = `${localAssetsRoot}/desktop/dt-mouse-arrow.svg`;
+        addl.cursorSrc = `${localAssetsRoot}/desktop/dt-Mouse-arrow.svg`;
       }
       config[sku] = { ...config[sku], ...addl };
     })
