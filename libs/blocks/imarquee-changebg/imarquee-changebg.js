@@ -92,9 +92,9 @@ export default async function init(el) {
         const pics3 = get3Img(rows[gOffset+4]);
         SKUS.forEach((sku, idx) => {
           const options = sku === 'desktop' ? [
-            { src: pics1[idx], swatchSrc: swatchSrc[idx]},
-            { src: pics2[idx], swatchSrc: swatchSrc[idx]},
-            { src: pics3[idx], swatchSrc: swatchSrc[idx]},
+            { src: pics1[idx], swatchSrc: swatchSrc[0]},
+            { src: pics2[idx], swatchSrc: swatchSrc[1]},
+            { src: pics3[idx], swatchSrc: swatchSrc[2]},
           ] : [ { src: pics1[idx], swatchSrc: swatchSrc[idx]} ]
           config[sku].groups[gIdx] = { name, iconUrl, options }
         })
